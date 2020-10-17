@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Configuração EF6 em Aplicação .NET4.5 (ou superior)</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <iframe src="../header.html"
+            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+
+        <h2>Configuração EF6 em Aplicação .NET4.5 (ou superior)</h2>
+
+        <p>A <b>Domínio Sistema</b> utiliza o banco de dados SQL Anywhere 16. Para acessá-lo via
+            Entity Framework 6 (não há suporte para EF Core) é necessário configurar alguns elementos no Visual Studio
+        </p>
+
+        <p>As configurações consistem em adicionar o EntityFramework e configurar o provider de acesso ao iAnyWhere</p>
+
+        <p>OBS.: importante lembrar que EF utiliza o arquivo de configuração (app.config) relativo ao projeto de
+            inicialização. Isto é, caso sua base de dados seja uma <i>class library</i>, pouco importará a configuração
+            do AppConfig.
+        </p>
+
+        <ul>
+            <li>
+                <h3>Referências e depedências externas:</h3>
+                <p>
+                    Adicionar/Instalar o EntityFramework 6 em ambos projetos. Na class library para dar suport ao
+                    DbContext, Mapping e DbSet. E no projeto de apresentação,
+                    para que possa acessar os dados.
+                </p>
+                <ul>
+                    <li>Entity Framework EF6</li>
+                    <li>Entity Framework.SqlServer EF6</li>
+                </ul>
+            </li>
+            <li>
+                <h3>Configuração App.Config</h3>
+                <p>
+                    O App.config a ser configurado é o do projeto de execução. A principal configuração refere-se ao
+                    providers de acesso.
+                    No caso, deverá ser incluido no DbProvidersFactories e no Provider a biblioteca do
+                    iAnyWhere.Data.SQLAnywhere.
+                </p>
+                <p>O arquivo final deverá ser tal qual imagem abaixo:</p>
+                <img src="imgAppConfig.png" />
+            </li>
+            <li>
+                <h3>Mais configurações</h3>
+                <p>
+                    Os passos acima são suficientes para funcionar o projeto. Não precisa instalar nenhuma depedencia do
+                    IAnyWhere. Contudo, na máquina testada (PC Ettore) está instalado
+                    o banco de dados Sybase SQL Anywhere. Logo, o arquivo do provider (iAnyWhere) foi baixado junto.
+                    Logo, ao usar no Visual Studio, bastou executar o processo de
+                    SetupVSPackage.exe /i, via terminal de comando.
+                </p>
+                <p>
+                    Essa operação está descrita na seguinte documentação <a
+                        href="http://dcx.sap.com/sqla170/en/html/815bde766ce210148d2ca92508067e31.html">SQL Anywhere
+                        .NET Data Provider removal</a>
+                </p>
+                <p>O arquivo final deverá ser tal qual imagem abaixo:</p>
+                <img src="imgAppConfig.png" />
+            </li>
+        </ul>
+    </div>
+</body>
+
+</html>

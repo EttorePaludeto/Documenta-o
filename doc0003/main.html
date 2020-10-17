@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Configuração EF6 em Aplicação .NET CORE</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <iframe src="../header.html"
+            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+        <h1>Configuração EF6 em Aplicação .NET CORE</h1>
+        
+        <h2>Descricação do Contexto</h2>
+
+        <p>
+            Nos projetos <strong>LineIN.Dominio.Dados e LineIN.Dominio.Console.Core</strong> foi utilizado o EntityFramework6 (EF6) para acessar a base de dados da DomínioSistemas
+            (Sybase - SQLAnyWhere16) por meio do <em>provider iAnyWhere.Data.SQLAnywhere.EF6</em> num projeto <em>Class Library</em> .NET 4.6.1v. E, na camada de apresentação, um projeto 
+            utilizando .NET Core.
+
+        </p>
+      
+        <h3>Objetivos</h3>
+        <p>
+            1. Descrever as configurações necessárias para adaptar o uso do EntityFramework6 num projeto .NET Core. Isto é, utilizar o .NET Core sem o EntityFrameworkCore.
+            <br>
+            2. Demonstrar como substituir o <em>provider</em> do EF6 utilizando uma abordagem de código ao invés de arquivos de configuração (app.config ou web.config).            
+        </p>
+        <p>
+            Referências e Dependências dos Projetos.
+            <br>
+           <img src="/doc0003/AssembliesEDependecias.png" style="width:385px;height:632px;" alt="AssembliesEDependecias" >
+           <br>
+           Ambos projetos fazem uso do EF6 6.4.4v e também referenciam o assembler <em>iAnyWhere.Data.SQLAnywhere.EF6</em>.
+        </p>
+
+        <h3>Classe de Configuração DbConfiguration</h3>
+        <p>
+            Abaixo segue a implementação real de uma classe de configuração do EF6 que é referencia como atributo da classe que herda <em>DbContext</em>.
+            A documentação oficial está linkada abaixo. Contudo, os pontos mais importantes são:
+            <ul class="ulMarcador">
+                <li>A configuração por arquivo precede ao código. Isto é, tem preferencia caso as duas abordagem sejam implementadas juntas</li>
+                <li>A configuração por código consiste na criação da subclasse <em>System.Data.Entity.Config.DbConfiguration</em></li>
+                <li>Essa subclasse deve ser decorada como atribuido da classe que herda <em>DbContext</em></li>
+                <li>A atribuição do provider utiliza os métodos SetProvidersFactory e SetProviderServices</li>
+            </ul>
+        </p>
+        <p><img src="/doc0003/classeConfiguracaoProviderEF6.png" style="width:845px;height:255px;" alt="classeConfiguracaoProviderEF6" ></p>
+        <p><img src="/doc0003/DbConfigurationTypeAttribuite.png" style="width:514px;height:382px;" alt="DbConfigurationTypeAttribuite" ></p>
+
+        <h3>Anotações</h3>
+        <p>
+            Não foi necessários setar os providers e services do <em>System.Data.SqlClient</em>. Isso significa que cada provedor contem todos os métodos e implementações
+            necessárias para dar cabo do acesso via EF6.
+        </p>
+        <p>
+            Projeto ainda não foi testado em produção, ou seja, num servidor que não seja a máquina do desenvolvedor.
+        </p>
+
+
+        <h4>Referências</h4>
+        <ul class="ulMarcador">
+            <li><a href="https://docs.microsoft.com/pt-br/ef/ef6/fundamentals/configuring/code-based">Microsoft - Configuração do EF6 Baseada em Código</a></li>
+            <li><a href="https://docs.microsoft.com/pt-br/ef/ef6/fundamentals/configuring/config-file">Microsoft - Configuração do EF6 Arquivo Configuração - App.Config ou Web.Config</a></li>
+            <li><a href="https://social.msdn.microsoft.com/Forums/en-US/679d380c-a88a-4718-bc57-04dcdab5e232/data-provider-for-sybase-asa-sqlanywhere-16-from-vs-2017?forum=vssetup">
+                Msdn - SetupPackage.exe /i /v6 do iAnyWhere no Visual Studio</a></li>
+
+        </ul>
+            
+
+    
+       
+    </div>
+</body>
+
+</html>

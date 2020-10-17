@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Relacionamentos/Mapeamento no EF6</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <iframe src="../header.html"
+            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+        <h1>Relacionamentos/Mapeamento no EF6</h1>
+        <h4>Links do Documentos</h4>
+        <ul>
+            <li><a href="#link1">Mapeamento no DbContext</a></li>
+            <li><a href="#link2">Usando Classes de Mapeamento Próprias</a></li>
+            <li> <a href="#link3">Relacionamento One To One/Zero</a></li>
+            <li> <a href="#link4">Usando <em>ComplexTypes</em></a></li>
+            <li> <a href="#link5">Dois Relacionamentos em Três Classes (pai, filho, neto)</em></a></li>
+        </ul>
+
+        <h2>Mapeamento dos Objetos</h2>
+        <p>
+            As classes de domínio são aquelas criadas para representar os objetos de negócio do software. Não estão
+            necessariamente na mesma estrutura disposta no banco de dados (BD).
+        </p>
+        <p>
+            Por essa razão surge a necessidade de <strong>mapear essas classes</strong> na estrutura do BD e, assim,
+            conseguir ler e
+            escrever do banco na aplicação e vice-e-versa.
+            Esse mapeamento consiste em setar cada propriedade de uma classe numa coluna do BD e configurar os
+            Relacionamentos existentes entre as classes: <em>One to One/Zero, One to Many, Many to Many</em>.
+            O mapeamento pode ser feito de duas formas:
+        </p>
+
+        <h4 id="link1">1) Na própria classe <em>DBContext</em></h4>
+        <p>
+            Sobrescrevendo o método método <em>OnModelCreating</em> é passado como parametro o objeto
+            <em>DbModelBuilder</em> que contém a propriedade <em>Entity</em>
+            do tipo <em>EntityTypeConfiguration</em> utilizada para maper os objetos (classes) nas tabelas do BD.
+            <br>
+            Essa abordagem, ao meu ver, polue o código e torna muito grande a classe DbContext. Todos os
+            mapeamentos, de todos os objetos, propriedade por propriedade, ficam debaixo do mesmo método
+            <em>OnModelCreating</em>.
+        </p>
+        <p><img src="/doc0002/classeMapeamentoContext.png" style="width:928px;height:328px;" alt="mapeamentoDbContext">
+        </p>
+        <h4 id="link2">2) Classes próprias de Mapeamento.</h4>
+        <p>
+            A outra abordagem é criar classes próprias e individualizadas para mapeamento dos objetos. Essas classes
+            devem implementar a interface <em>EntityTypeConfiguration&lt;T&gt;</em> e, no construtor da classe é
+            feito
+            mapeamento.
+
+        </p>
+        <p><img src="/doc0002/classeMapeamentoORM.png" style="width:628px;height:628px;"
+                alt="mapeamentoClassesProprias">
+        </p>
+
+        <h2>Relacionamentos entre Objetos</h2>
+        <p>
+            Nos bancos de dados relacionais, as relações entre os objetos é chamada de <strong>relacionamentos</strong>.
+            São
+            feitos por meio de <em>chaves</em>: primarias e estrangeiras.
+            Já nas classes de objetos, esses relacionamentos são feitos na forma de <strong>propriedades de
+                navegação</strong>.
+            <br>
+            No EF6 temos os relacionamentos básicos de <em>One to One/Zero, One to Many ou Many to Many</em> tal qual
+            nos BD
+            relacionais.
+        </p>
+
+        <h3 id="link3">Relacionamento One to One/Zero</h3>
+
+        <p>
+            No caso das entidades <b>Empresa</b> e a entidade <b>Endereço</b> tem-se um Relacionamento do tipo <em>one
+                to
+                one/zero</em>, isto é,
+            para cada empresa tem apenas um endereço e para cada endereço, obrigatoriamente, uma empresa.
+            <br>
+            Faz sentido vez que uma Empresa pode ter UM ou NENHUM endereço (ainda na fase de constituição). Por outro
+            lado,
+            um Endereço não faz sentido
+            sem uma empresa.
+        </p>
+        <p><img src="/doc0002/classesEmpresaAndEndereco.png" style="width:1100px;height:328px;"
+                alt="classesEmpresaAndEndereco"></p>
+        <p>
+            Além disso, nestas classes ocorre uma situação inusitada. No BD as informações de Empresa e Endereço estão
+            contidas na mesma tabela (bethadba.geempre).
+            E, como pode ser visto, no modelo estão segregadas em duas entidades distintas.
+            <br>
+            Para que as classes possam ser mapeadas e relacionadas é necessário a existência de uma <strong>chave
+                primaria</strong> em cada uma das entidades.
+            No caso de Empresa é simples, o campo "codi_emp" da tabela "geempre" é chave primaria da entidade Empresa.
+            No
+            caso de endereço, se pensarmos, não existe uma
+            chave primeira. Neste caso, para solicionar o problema, atribuimos como chave primeira também o EmpresaId
+            (representado por "codi_emp").Logo, tanto Empresa
+            como Endereço são preenchidas pela tabela "geempre" e possuem como chaves a coluna "codi_emp". Assim, o
+            Relacionamento entre elas passou a ser de <em>One to One/Zero</em>
+            como pode ser visto abaixo:
+        </p>
+        <p><img src="/doc0002/relacionamentoOneToOne.png" style="width:1200px;height:528px;"
+                alt="relacionamentoOneToOne">
+        </p>
+
+        <h3 id="link4">Relacionamento ComplexType</h3>
+        <p>
+            Na verdade não se trata de um relacionamento em si. O <em>ComplexType</em> é um tipo de dados complexto,
+            isto é,
+            não é um tipo primitivo como string, int, long, decimal etc.
+            Parace-se mais com uma estrutura de dados, por exemplo: a classe Endereço.
+        </p>
+        <p>
+            No projeto, ela foi estrurada como uma entidade (classe) por conta de outras situações (Relacionamento com a
+            classe
+            Municipio, v.g.). Contudo, poderia ser estruturada como um ComplexType.
+            A diferença é que o ComplexType deve ser marcado com o atributo "[ComplexType]" na classe. A partir daí, o
+            EF6
+            entenderá ser um ComplexType e você pode usá-lo no mapeamento.
+        </p>
+        <p>
+            Temos a classe <strong>Reponsavel Legal</strong> que foi escritura como um ComplexType. Note que o tipo
+            descreve
+            tês propriedades.
+            Essas são atribuidas a classe Empresa, ou seja, uma Empresa deve ter UM resposável legal. No BD essas
+            informações estão na mesma tabela
+            "gempre". Contudo, para melhor divisão, entendemos que deveriam essas informações deveriam ser desacopladas
+            da
+            classe Empresa e pertencer
+            a um grupo específico de dado chamado de "Reponsavel Legal".
+        </p>
+        <p>
+            O mapeamento de ComplexType pode ser visto na imagem mais acima.
+        </p>
+        <p><img src="/doc0002/classeReponsavelLegal.png" style="width:600px;height:228px;" alt="classeReponsavelLegal">
+        </p>
+
+        <h3 id="link5">Dois Relacionamentos em Três Classes (pai, filho, neto)</h3>
+
+        <p>
+            Este relacionamento foi implementados nas classes Empresa, ObjetoSocial e ObjetoSocialSecundário. São,
+            respectivamente, classe Pai, Filha e Neta, sendo: para cada
+            Empresa temos UM/ZERO ObjetoSocial. E, cada ObjetoSocial temos ZERO/MUITO ObjetosSociaisSecundários. Além
+            disso, ambas classes ObjetoSocial fazem uso da classe Cnae
+            para carregar o Codigo e Descricao. A classe ObjetoSocial possuim UM Cnae. Já a classe
+            ObjetoSocialSecundário possuim uma coleção de Cnae.
+        </p>
+        <p>
+            Está lógica é diretamente relaciona ao ambiente de negócio. Toda empresa tem ao menos uma atividade (chamada
+            de principal) e pode ter várias ou nenhuma secundária.
+        </p>
+        <h4>Qual o problema foi resolvido?</h4>
+        <p>
+            Na no BD da Dominio Sistema, na tabela <em>geempre</em> temos as informações das Classes Empresa e
+            ObjetoSocial. Já a tabela <em>geatvsecundaria_vigencia</em> contém
+            a relação das atividades secundárias.
+            <br>
+            O problema foi como estruturar o relacionamento entre essas três classes, principalmente, Filha e Neta por
+            conta das chaves primarias e estrangeiras.
+        </p>
+
+        <h4>Chaves primaria fake</h4>
+        <p>
+            A tabela ObjetoSocial não possui o identificador próprio. Afinal, ela deveria de <em>geempre</em> cuja chave
+            primária é <em>codi_emp</em>. Logo, foi criada uma <em>chave fake</em>
+            do tipo <em>Guid</em> e inicializada no construtor da classe.
+        </p>
+        <p>
+            Essa chave foi necessária para relacionar a classe ObjetoSocialSecundário. Contudo, essa propriedade não tem
+            correspondente do BD, portanto, no mapeamento, teve quer se ignorada.
+            Os quadros abaixo representam a situação por si.
+        </p>
+        <h4>Chaves primaria composta</h4>
+        <p>
+            Outro ponto ser observado são as chaves compostas da tabela <em>geatvsecundaria_vigencia</em>. No mapeamento
+            dessa classe foram referenciadas ambas chaves.
+        </p>
+        <h4>Relacionamento Um para Muitos com duas chaves</h4>
+        <p>
+            A, por fim, notar que o relacionamento entre ObjetoSocial e ObjetoSocialSecundário se deu por meio de duas
+            chaves: EmpresaId e ObjetoSocialId.
+        </p>
+        <p><img src="/doc0002/classeEmpresaObjetoSocialESecundarios.png" style="width:1400px;height:350px;"
+                alt="classeEmpresaObjetoSocialESecundarios"></p>
+        <p><img src="/doc0002/mapeamentoEmpresaObjetoSocialESecundario.png" style="width:605px;height:870px;"
+                alt="mapeamentoEmpresaObjetoSocialESecundario"></p>
+    </div>
+</body>
+
+</html>

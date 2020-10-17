@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Documentação</title>
+</head>
+
+<body>
+    <div class="container">
+        <iframe src="header.html"
+            onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+
+
+        <div class="main">
+
+        </div>
+        <h1>Indice para documentação do LineIN</h1>
+
+        <p>As configurações básicas de sistema serão informadas
+            aos longo desse documento.</p>
+
+        <ul>
+            <li>
+                <a href="doc0001/main.html">Configuração EF6 em Aplicação .NET4.5 (ou superior)</a>
+                <p>
+                    Parâmetros e requisitos necessários para configurar
+                    o acesso ao bando de dados da Domínio Sistemas (SQL Anywhere 16) via
+                    Entity Framework 6 em aplicação .NET4.5 e seguintes.
+                </p>
+            </li>
+            <li>
+                <a href="doc0003/main.html">Configuração EF6 em Aplicação .NET CORE</a>
+                <p>
+                    Configuração de uma aplicação .NET CORE para acessar os dados de uma <em>class library</em> utilizando EntityFramework 6. Além disso,
+                    utilizando o provider da Sybase de acesso a dados <em>IAnywhere.Data.SqlServer</em> numa abordagem de configuração por código (<em>DbConnectionType</em>)
+                    ao invés de utilizar o pradão arquivos App.Config e/ou Web.Config.
+                </p>
+            </li>
+           
+            <li>
+                <a href="doc0002/main.html">Relacionamentos/Mapeamento no EF6</a>
+                <p>
+                    Detalhe de implementação das classes de mapeamento do EF6 para banco de dados. E, também, como implementar esses
+                    mapeamentos no diversos tipo de relacionamento entre entidades: <em>One to One/Zero, One to Many/Zero, Many to Many</em>
+                </p>
+            </li>
+        </ul>
+    </div>
+</body>
+
+</html>
